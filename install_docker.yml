@@ -1,27 +1,79 @@
+# install_docker.yml
 - name: Install Docker and Docker Compose
   hosts: all
-  become: yes
+  become: yes  # Run all tasks as root
   tasks:
-    ### Pre-Task: Install Prerequisite Packages Using Command Module
+    # Step 1: Install prerequisite packages
     - name: Install prerequisite packages for Docker
-      command: apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
       become: yes
       become_user: root
 
-    ### Verify and Add Docker’s Official Repository
-    - name: Verify Docker repository setup
-      shell: echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
+    # Step 2: Add Docker GPG key
+    - name: Download Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /tmp/docker.gpg
+        mode: '0644'
+
+    - name: Add Docker GPG key to keyring
+      command: gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg /tmp/docker.gpg
       become: yes
       become_user: root
 
-    ### Update Package Index
+    # Step 3: Set up Docker repository
+    - name: Add Docker repository
+      copy:
+        content: "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable\n"
+        dest: /etc/apt/sources.list.d/docker.list
+        mode: '0644'
+
+    # Step 4: Update apt package index
     - name: Update apt package index
-      command: apt-get update
+      apt:
+        update_cache: yes
       become: yes
       become_user: root
 
-    ### Install Docker Packages
+    # Step 5: Install Docker Engine and Docker Compose
     - name: Install Docker Engine and Docker Compose
-      command: apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
       become: yes
       become_user: root
+
+    # Step 6: Start Docker and enable it on boot
+    - name: Ensure Docker is running and enabled on boot
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    # Step 7: (Optional) Verify Docker installation
+    - name: Check Docker version
+      command: docker --version
+      register: docker_version
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker version installed: {{ docker_version.stdout }}"
+
+    - name: Check Docker Compose version
+      command: docker compose version
+      register: docker_compose_version
+
+    - name: Display Docker Compose version
+      debug:
+        msg: "Docker Compose version installed: {{ docker_compose_version.stdout }}"
