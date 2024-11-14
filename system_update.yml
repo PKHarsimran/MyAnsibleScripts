@@ -1,34 +1,14 @@
 # system_update.yml
-- name: Update and upgrade the system
+- name: Simple Update and Upgrade
   hosts: all
-  become: yes  # Ensure all tasks run as root
+  become: yes  # Run tasks as root for package management
   tasks:
     # Update the apt package index to get the latest package information
     - name: Update the package list
       apt:
         update_cache: yes
-      retries: 3  # Retry 3 times
-      delay: 10  # Wait 10 seconds between retries
-      register: apt_update_result
-      until: apt_update_result is success
 
     # Upgrade all installed packages to the latest version
     - name: Upgrade all packages
       apt:
         upgrade: dist
-        autoremove: yes
-
-    # Clean up unused package files
-    - name: Clean up unused package files
-      apt:
-        autoclean: yes
-
-    # Optional: Check if a reboot is required
-    - name: Check if a reboot is required
-      command: needs-restarting -r
-      register: reboot_required
-      ignore_errors: yes
-
-    - name: Reboot the system if necessary
-      reboot:
-      when: reboot_required.rc == 1
