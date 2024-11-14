@@ -1,7 +1,7 @@
 # apt_troubleshoot.yml
 - name: Troubleshoot apt lock issues
   hosts: all
-  become: yes  # Run as root to manage apt processes and locks
+  become: yes
   tasks:
     # Check for any processes using the apt lock
     - name: Find any processes holding the apt lock
@@ -18,18 +18,21 @@
       shell: "lsof -t /var/lib/apt/lists/lock | xargs -r kill -9"
       when: lock_process_check.stdout != ""
 
-    # Remove leftover lock files to reset the apt state
+    # Remove leftover lock files with explicit become
     - name: Remove the apt lists lock file
+      become: yes
       file:
         path: /var/lib/apt/lists/lock
         state: absent
 
     - name: Remove the apt archives lock file
+      become: yes
       file:
         path: /var/cache/apt/archives/lock
         state: absent
 
     - name: Remove the dpkg lock file
+      become: yes
       file:
         path: /var/lib/dpkg/lock
         state: absent
