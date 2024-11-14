@@ -17,7 +17,7 @@
 
     - name: Display Uptime
       debug:
-        msg: "Uptime: {{ ansible_uptime_seconds | int | human_readable_time }}"
+        msg: "Uptime: {{ (ansible_uptime_seconds | int // 3600) }} hours, {{ ((ansible_uptime_seconds | int % 3600) // 60) }} minutes, {{ (ansible_uptime_seconds | int % 60) }} seconds"
 
     - name: Display Total Memory
       debug:
@@ -29,4 +29,4 @@
 
     - name: Display Disk Usage
       debug:
-        msg: "Root Partition Free Space: {{ ansible_mounts[0].size_available | human_readable_size }} out of {{ ansible_mounts[0].size_total | human_readable_size }}"
+        msg: "Root Partition Free Space: {{ ansible_mounts[0].size_available | int / 1024 / 1024 | round(2) }} MB out of {{ ansible_mounts[0].size_total | int / 1024 / 1024 | round(2) }} MB"
