@@ -18,24 +18,15 @@
       shell: "lsof -t /var/lib/apt/lists/lock | xargs -r kill -9"
       when: lock_process_check.stdout != ""
 
-    # Remove leftover lock files with explicit become
+    # Use shell commands to remove lock files if permission issues persist
     - name: Remove the apt lists lock file
-      become: yes
-      file:
-        path: /var/lib/apt/lists/lock
-        state: absent
+      shell: "sudo rm -f /var/lib/apt/lists/lock"
 
     - name: Remove the apt archives lock file
-      become: yes
-      file:
-        path: /var/cache/apt/archives/lock
-        state: absent
+      shell: "sudo rm -f /var/cache/apt/archives/lock"
 
     - name: Remove the dpkg lock file
-      become: yes
-      file:
-        path: /var/lib/dpkg/lock
-        state: absent
+      shell: "sudo rm -f /var/lib/dpkg/lock"
 
     # Reconfigure any dpkg packages if necessary
     - name: Reconfigure dpkg if it was interrupted
