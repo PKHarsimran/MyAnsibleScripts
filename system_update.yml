@@ -1,26 +1,30 @@
 # system_update.yml
 - name: Update and upgrade the system
   hosts: all
-  become: yes  # Run tasks as root for package management
+  become: yes  # Ensure all tasks run as root
   tasks:
     # Update the apt package index to get the latest package information
     - name: Update the package list
+      become: yes
       apt:
         update_cache: yes
 
     # Upgrade all installed packages to the latest version
     - name: Upgrade all packages
+      become: yes
       apt:
         upgrade: dist  # Perform a full upgrade
         autoremove: yes  # Remove packages no longer required
 
     # Optional: Clean up the local repository of retrieved package files
     - name: Clean up unused package files
+      become: yes
       apt:
         autoclean: yes
 
     # Optional: Reboot the system if any kernel updates were applied
     - name: Check if a reboot is required
+      become: yes
       command: needs-restarting -r
       register: reboot_required
       ignore_errors: yes
