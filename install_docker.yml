@@ -3,6 +3,14 @@
   hosts: all
   become: yes
   tasks:
+    ### Pre-Task: Ensure Ansible has permission to manage apt
+    - name: Set permissions for /var/lib/apt
+      file:
+        path: /var/lib/apt
+        mode: '0755'
+        owner: root
+        group: root
+
     ### Install Prerequisite Packages for Docker
     - name: Install prerequisite packages
       apt:
