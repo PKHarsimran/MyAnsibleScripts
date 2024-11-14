@@ -3,12 +3,8 @@
   hosts: all
   become: yes
   tasks:
-    ### Step 1: Update and Install Required Packages
-    - name: Update apt package index
-      apt:
-        update_cache: yes
-
-    - name: Install prerequisite packages for Docker
+    ### Install Prerequisite Packages for Docker
+    - name: Install prerequisite packages
       apt:
         name:
           - apt-transport-https
@@ -18,7 +14,7 @@
           - lsb-release
         state: present
 
-    ### Step 2: Add Docker’s Official GPG Key and Repository
+    ### Add Docker’s Official GPG Key and Repository
     - name: Add Docker GPG key
       apt_key:
         url: https://download.docker.com/linux/debian/gpg
@@ -30,7 +26,7 @@
         state: present
         filename: docker
 
-    ### Step 3: Install Docker Engine and Docker Compose Plugin
+    ### Install Docker Engine and Docker Compose Plugin
     - name: Install Docker Engine and Docker Compose
       apt:
         name:
@@ -40,7 +36,7 @@
           - docker-compose-plugin
         state: latest
 
-    ### Step 4: Manage Docker as a Non-root User
+    ### Manage Docker as a Non-root User
     - name: Create Docker group if it does not exist
       group:
         name: docker
@@ -52,14 +48,14 @@
         groups: docker
         append: yes
 
-    ### Step 5: Enable and Start Docker
+    ### Enable and Start Docker Service
     - name: Enable and start Docker service
       systemd:
         name: docker
         enabled: yes
         state: started
 
-    ### Step 6: Verify Docker and Docker Compose Installation
+    ### Verify Docker and Docker Compose Installation
     - name: Check Docker version
       command: docker --version
       register: docker_version
