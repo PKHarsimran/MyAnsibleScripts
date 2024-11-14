@@ -1,32 +1,66 @@
 # system_info.yml
-- name: Gather system information
+- name: Gather comprehensive system information
   hosts: all
-  gather_facts: yes
+  gather_facts: yes  # Automatically collects system facts such as IP, OS, memory, etc.
   tasks:
+    ### System Information Gathering
+    
+    # Display the system hostname
     - name: Display Hostname
       debug:
         msg: "Hostname: {{ ansible_hostname }}"
 
+    # Display the primary IP address of the system
     - name: Display IP Address
       debug:
         msg: "IP Address: {{ ansible_default_ipv4.address }}"
 
+    # Display the OS distribution and version
     - name: Display Operating System
       debug:
         msg: "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
 
+    # Display the kernel version of the OS
+    - name: Display Kernel Version
+      debug:
+        msg: "Kernel Version: {{ ansible_kernel }}"
+
+    # Display the system architecture (e.g., x86_64, armv7l)
+    - name: Display System Architecture
+      debug:
+        msg: "Architecture: {{ ansible_architecture }}"
+
+    # Display system uptime in a human-readable format (hours, minutes, seconds)
     - name: Display Uptime
       debug:
         msg: "Uptime: {{ (ansible_uptime_seconds | int // 3600) }} hours, {{ ((ansible_uptime_seconds | int % 3600) // 60) }} minutes, {{ (ansible_uptime_seconds | int % 60) }} seconds"
 
-    - name: Display Total Memory
+    # Display the CPU information, including the number of cores and the model
+    - name: Display CPU Information
       debug:
-        msg: "Total Memory: {{ ansible_memtotal_mb }} MB"
+        msg: "CPU Cores: {{ ansible_processor_cores }} | Model: {{ ansible_processor[1] }}"
 
-    - name: Display Available Memory
+    # Display total and available memory in MB
+    - name: Display Total and Free Memory
       debug:
-        msg: "Available Memory: {{ ansible_memfree_mb }} MB"
+        msg: "Total Memory: {{ ansible_memtotal_mb }} MB | Available Memory: {{ ansible_memfree_mb }} MB"
 
-    - name: Display Disk Usage
+    # Display disk usage of the root partition, with both available and total space in MB
+    - name: Display Disk Usage for Root Partition
       debug:
         msg: "Root Partition Free Space: {{ ansible_mounts[0].size_available | int / 1024 / 1024 | round(2) }} MB out of {{ ansible_mounts[0].size_total | int / 1024 / 1024 | round(2) }} MB"
+
+    # List all active network interfaces on the system
+    - name: Display Active Network Interfaces
+      debug:
+        msg: "Active Network Interfaces: {{ ansible_interfaces }}"
+
+    # Gather open/listening ports and their protocol using the `ss` command
+    - name: Display Listening Ports
+      shell: "ss -tuln | awk '{print $1, $5}' | tail -n +2"  # Lists all open TCP/UDP ports
+      register: listening_ports  # Saves the output in a variable for display
+
+    # Output the list of open/listening ports
+    - name: Show Listening Ports
+      debug:
+        msg: "{{ listening_ports.stdout_lines }}"  # Display the saved output of open ports
