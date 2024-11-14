@@ -3,14 +3,14 @@
   hosts: all
   become: yes
   tasks:
-    ### Pre-Task: Install Prerequisites Using Command Module
-    - name: Install prerequisite packages for Docker (apt-transport-https, ca-certificates, curl, gnupg, lsb-release)
-      command: >
-        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+    ### Pre-Task: Install Prerequisite Packages Using Command Module
+    - name: Install prerequisite packages for Docker
+      command: sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 
     ### Add Docker’s Official GPG Key and Repository
     - name: Add Docker GPG key
-      command: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      shell: curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      become: yes
 
     - name: Set up Docker repository
       command: echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
