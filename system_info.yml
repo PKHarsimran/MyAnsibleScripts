@@ -1,0 +1,32 @@
+# system_info.yml
+- name: Gather system information
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Display Hostname
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}"
+
+    - name: Display IP Address
+      debug:
+        msg: "IP Address: {{ ansible_default_ipv4.address }}"
+
+    - name: Display Operating System
+      debug:
+        msg: "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Display Uptime
+      debug:
+        msg: "Uptime: {{ ansible_uptime_seconds | int | human_readable_time }}"
+
+    - name: Display Total Memory
+      debug:
+        msg: "Total Memory: {{ ansible_memtotal_mb }} MB"
+
+    - name: Display Available Memory
+      debug:
+        msg: "Available Memory: {{ ansible_memfree_mb }} MB"
+
+    - name: Display Disk Usage
+      debug:
+        msg: "Root Partition Free Space: {{ ansible_mounts[0].size_available | human_readable_size }} out of {{ ansible_mounts[0].size_total | human_readable_size }}"
