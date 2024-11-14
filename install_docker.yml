@@ -1,63 +1,27 @@
-# install_docker.yml
 - name: Install Docker and Docker Compose
   hosts: all
   become: yes
   tasks:
     ### Pre-Task: Install Prerequisite Packages Using Command Module
     - name: Install prerequisite packages for Docker
-      command: sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-
-    ### Add Docker’s Official GPG Key and Repository
-    - name: Download Docker GPG key
-      command: curl -fsSL -o /tmp/docker.gpg https://download.docker.com/linux/debian/gpg
+      command: apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
       become: yes
       become_user: root
 
-    - name: Add Docker GPG key to keyring
-      command: gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg /tmp/docker.gpg
+    ### Verify and Add Docker’s Official Repository
+    - name: Verify Docker repository setup
+      shell: echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
       become: yes
       become_user: root
-      
-    ### Update Package Index for Docker Installation
+
+    ### Update Package Index
     - name: Update apt package index
-      command: sudo apt-get update
+      command: apt-get update
+      become: yes
+      become_user: root
 
-    ### Install Docker Engine and Docker Compose Plugin
+    ### Install Docker Packages
     - name: Install Docker Engine and Docker Compose
-      command: sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-    ### Manage Docker as a Non-root User
-    - name: Create Docker group if it does not exist
-      group:
-        name: docker
-        state: present
-
-    - name: Add the current user to Docker group
-      user:
-        name: "{{ ansible_user }}"
-        groups: docker
-        append: yes
-
-    ### Enable and Start Docker Service
-    - name: Enable and start Docker service
-      systemd:
-        name: docker
-        enabled: yes
-        state: started
-
-    ### Verify Docker and Docker Compose Installation
-    - name: Check Docker version
-      command: docker --version
-      register: docker_version
-
-    - name: Display Docker version
-      debug:
-        msg: "Docker version: {{ docker_version.stdout }}"
-
-    - name: Check Docker Compose version
-      command: docker compose version
-      register: docker_compose_version
-
-    - name: Display Docker Compose version
-      debug:
-        msg: "Docker Compose version: {{ docker_compose_version.stdout }}"
+      command: apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+      become: yes
+      become_user: root
