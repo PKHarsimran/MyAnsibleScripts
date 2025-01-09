@@ -9,65 +9,64 @@ Welcome to **MyAnsibleScripts**, a collection of Ansible playbooks designed to a
 Here’s a quick summary of the playbooks in this repository:
 
 ### 1. `apt_troubleshoot.yml` 🐧
-- **Purpose**: Troubleshoots and resolves common `apt` package manager issues on Debian-based systems.
-- **Key Features**:
-  - 🧹 Cleans package caches.
-  - 🔗 Fixes broken dependencies.
-  - 📦 Updates and upgrades system packages.
+
+**Purpose**: Resolves `apt` lock issues by identifying and clearing lock files, reconfiguring `dpkg`, and ensuring smooth package updates.
+
+**Key Features:**
+- Identifies and kills processes holding `apt` locks.
+- Removes lock files.
+- Reconfigures `dpkg` for interrupted installations.
 
 ---
 
 ### 2. `install_docker.yml` 🐳
-- **Purpose**: Automates the installation and setup of Docker and Docker Compose.
-- **Key Features**:
-  - 🔧 Installs Docker CE.
-  - 👤 Configures Docker for non-root users.
-  - 🛠️ Installs Docker Compose for container orchestration.
+
+**Purpose**: Automates the installation of Docker and Docker Compose for containerized application deployment.
+
+**Key Features:**
+- Installs prerequisites.
+- Configures Docker GPG key and repository.
+- Installs Docker CE, CLI, and Docker Compose plugin.
+- Enables and starts Docker on boot.
 
 ---
 
 ### 3. `ping.yml` 📡
-- **Purpose**: Verifies Ansible connectivity to target hosts.
-- **Key Features**:
-  - ✅ Pings target machines to ensure connection.
-  - 🖧 Confirms Ansible setup is working.
+
+**Purpose**: Tests Ansible's connectivity to target hosts by sending a simple ping.
+
+**Key Features:**
+- Verifies Ansible connectivity and setup.
 
 ---
 
 ### 4. `system_info.yml` 📊
-- **Purpose**: Gathers detailed system information from target hosts.
-- **Key Features**:
-  - 📋 Collects OS details, uptime, and hardware specs.
-  - 🖥️ Useful for inventory management and monitoring.
+
+**Purpose**: Collects and displays detailed system information including hardware, network, and OS details.
+
+**Key Features:**
+- Displays hostname, IP, OS, and kernel version.
+- Shows uptime, CPU details, memory usage, and disk space.
+- Lists active network interfaces and listening ports.
 
 ---
 
 ### 5. `system_update.yml` 🔄
-- **Purpose**: Updates the system to ensure it’s running the latest software.
-- **Key Features**:
-  - 🆕 Updates package repositories.
-  - 📦 Upgrades installed packages.
+
+**Purpose**: Updates and upgrades all system packages to their latest versions.
+
+**Key Features:**
+- Updates the package list.
+- Performs a distribution upgrade.
 
 ---
 
-### 6. `update_and_install.yml` ⚙️
-- **Purpose**: Combines system updates with software installation.
-- **Key Features**:
-  - 🔄 Updates the system.
-  - 🛠️ Installs predefined software packages in one go.
+### 6. `update_and_install.yml` 🛠️
+
+**Purpose**: Updates system packages and installs essential tools.
+
+**Key Features:**
+- Updates and upgrades all packages.
+- Installs packages like `git`, `curl`, and `vim`.
 
 ---
-
-## 🛠️ Requirements
-
-- Ansible version 2.9+ installed on your control node.
-- SSH access to the target hosts.
-- Sudo privileges on the target machines (if required by the playbooks).
-
----
-
-## 🚀 Getting Started
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/PKHarsimran/MyAnsibleScripts.git
